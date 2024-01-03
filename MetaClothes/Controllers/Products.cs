@@ -3,17 +3,20 @@
 namespace MetaClothes.Controllers
 {
     [ApiController]
+    [Route("api/products")]
     public class Products: ControllerBase
     {
-        public JsonResult GetProducts()
+        [HttpGet]
+        public ActionResult GetProducts()
         {
-           return new JsonResult(
-                new List<object>
-                {
-                    new {id = 1, name = "Shirt"},
-                    new {id = 2, name = "Shoe"}
-                }
-                );
+           return new JsonResult(ProductDataStore.Current.Products);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult GetProduct(int id) {
+
+            return new JsonResult(ProductDataStore.Current.Products.FirstOrDefault(c=> c.ID == id));
+        
         }
     }
 }
