@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MetaClothes.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MetaClothes.Controllers
 {
@@ -7,13 +8,13 @@ namespace MetaClothes.Controllers
     public class Products: ControllerBase
     {
         [HttpGet]
-        public ActionResult GetProducts()
+        public ActionResult<IEnumerable<ProductDto>> GetProducts()
         {
-           return new JsonResult(ProductDataStore.Current.Products);
+          return Ok(ProductDataStore.Current.Products);
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetProduct(int id) {
+        public ActionResult<ProductDto> GetProduct(int id) {
 
             return new JsonResult(ProductDataStore.Current.Products.FirstOrDefault(c=> c.ID == id));
         
