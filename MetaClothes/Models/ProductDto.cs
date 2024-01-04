@@ -5,7 +5,17 @@
 
         public int ID { get; set; }
         public string Name { get; set; } = string.Empty;
-        public int Cost { get; set; }
-        public string? Description { get; set; }
+
+        public int numberofproducts { get
+            {
+
+                return products.Count;
+
+            }
+        }
+
+
+        public ICollection<ProductsDto> products { get; set; }
+        = new List<ProductsDto>();
     }
 }

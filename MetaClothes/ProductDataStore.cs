@@ -12,13 +12,57 @@ namespace MetaClothes
             Products = new List<ProductDto>()
             {
 
-                new ProductDto(){ ID = 1 , Name = "Shoe" , Cost = 450000 , Description = "Beautifull" },
-
-                new ProductDto(){ ID = 2 , Name = "Shirt" , Cost = 300000 , Description = "Beautifull" },
+                new ProductDto(){ ID = 1, Name = "Shoe"
+                , products = new List<ProductsDto>(){ 
                 
-                new ProductDto(){ ID = 3 , Name = "Glove" , Cost = 150000 , Description = "Beautifull" },
+                    new ProductsDto()
+                    {
 
-                new ProductDto(){ ID = 4 , Name = "T-Shrit" , Cost = 350000 , Description = "Beautifull" }
+                        id = 1 , name = "Nike" , cost = 750000 , description = ""
+
+                    }
+                
+                
+                } },
+
+                new ProductDto(){ ID = 2 , Name = "Shirt"
+                 , products = new List<ProductsDto>(){
+
+                    new ProductsDto()
+                    {
+
+                        id = 2 , name = "LV Shirt" , cost = 450000 , description = "New Brand"
+
+                    }
+
+
+                }},
+                
+                new ProductDto(){ ID = 3 , Name = "Pants"
+                 , products = new List<ProductsDto>(){
+
+                    new ProductsDto()
+                    {
+
+                        id = 3 , name = "Nike" , cost = 500000 , description = ""
+
+                    }
+
+
+                }},
+
+                new ProductDto(){ ID = 4 , Name = "Jacket"
+                 , products = new List<ProductsDto>(){
+
+                    new ProductsDto()
+                    {
+
+                        id = 4 , name = "Meta Jacket" , cost = 400000 , description = "Our Brand Is Coming!"
+
+                    }
+
+                    
+                }}
 
             };
         }
