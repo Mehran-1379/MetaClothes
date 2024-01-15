@@ -55,10 +55,12 @@ namespace MetaClothes.Controllers
                 await using var connection = new NpgsqlConnection(connectionString);
                 await connection.OpenAsync();
 
-                var sql = "UPDATE clothes SET Name = @Name, Price = @Price WHERE ID = @ID";
+                var sql = "UPDATE clothes SET Name = @Name, Price = @Price, Category = @Category , Image = @Image WHERE ID = @ID";
                 await using var cmd = new NpgsqlCommand(sql, connection);
                 cmd.Parameters.AddWithValue("@Name", clothes.Name);
                 cmd.Parameters.AddWithValue("@Price", clothes.Price);
+                //cmd.Parameters.AddWithValue("@Category", clothes.Category);
+                //cmd.Parameters.AddWithValue("@Image", clothes.Image);
                 cmd.Parameters.AddWithValue("@ID", clothes.ID);
 
                 var rowsAffected = await cmd.ExecuteNonQueryAsync();
@@ -86,8 +88,9 @@ namespace MetaClothes.Controllers
                 await using var connection = new NpgsqlConnection(connectionString);
                 await connection.OpenAsync();
 
-                var sql = "INSERT INTO Clothes (Name, Price) VALUES (@Name, @Price)";
+                var sql = "INSERT INTO Clothes (ID,Name,Price) VALUES (@ID,@Name, @Price)";
                 await using var cmd = new NpgsqlCommand(sql, connection);
+                cmd.Parameters.AddWithValue("@ID", clothes.ID);
                 cmd.Parameters.AddWithValue("@Name", clothes.Name);
                 cmd.Parameters.AddWithValue("@Price", clothes.Price);
 
