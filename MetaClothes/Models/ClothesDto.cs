@@ -3,16 +3,16 @@
     public class ClothesDto
     {
 
-        public int ID { get; set; }
+        public int id { get; set; }
 
-        public string Name { get; set; } = string.Empty;
+        public string name { get; set; } = string.Empty;
 
-        public int Price { get; set; }
+        public int price { get; set; }
 
-        //public string? Category { get; set; }
+        public string category { get; set; }
 
 
-        //public string? Image { get; set; }
+        public string image { get; set; }
 
 
     }

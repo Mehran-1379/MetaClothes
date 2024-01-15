@@ -55,13 +55,13 @@ namespace MetaClothes.Controllers
                 await using var connection = new NpgsqlConnection(connectionString);
                 await connection.OpenAsync();
 
-                var sql = "UPDATE clothes SET Name = @Name, Price = @Price, Category = @Category , Image = @Image WHERE ID = @ID";
+                var sql = "UPDATE clothes SET name = @name, price = @price, category = @category , image = @image WHERE id = @id";
                 await using var cmd = new NpgsqlCommand(sql, connection);
-                cmd.Parameters.AddWithValue("@Name", clothes.Name);
-                cmd.Parameters.AddWithValue("@Price", clothes.Price);
-                //cmd.Parameters.AddWithValue("@Category", clothes.Category);
-                //cmd.Parameters.AddWithValue("@Image", clothes.Image);
-                cmd.Parameters.AddWithValue("@ID", clothes.ID);
+                cmd.Parameters.AddWithValue("@name", clothes.name);
+                cmd.Parameters.AddWithValue("@price", clothes.price);
+                cmd.Parameters.AddWithValue("@category", clothes.category);
+                cmd.Parameters.AddWithValue("@image", clothes.image);
+                cmd.Parameters.AddWithValue("@id", clothes.id);
 
                 var rowsAffected = await cmd.ExecuteNonQueryAsync();
 
@@ -88,11 +88,13 @@ namespace MetaClothes.Controllers
                 await using var connection = new NpgsqlConnection(connectionString);
                 await connection.OpenAsync();
 
-                var sql = "INSERT INTO Clothes (ID,Name,Price) VALUES (@ID,@Name, @Price)";
+                var sql = "INSERT INTO Clothes (id,name,price,category,image) VALUES (@id,@name,@price,@category,@image)";
                 await using var cmd = new NpgsqlCommand(sql, connection);
-                cmd.Parameters.AddWithValue("@ID", clothes.ID);
-                cmd.Parameters.AddWithValue("@Name", clothes.Name);
-                cmd.Parameters.AddWithValue("@Price", clothes.Price);
+                cmd.Parameters.AddWithValue("@id", clothes.id);
+                cmd.Parameters.AddWithValue("@name", clothes.name);
+                cmd.Parameters.AddWithValue("@price", clothes.price);
+                cmd.Parameters.AddWithValue("@category", clothes.category);
+                cmd.Parameters.AddWithValue("@image", clothes.image);
 
                 var rowsAffected = await cmd.ExecuteNonQueryAsync();
 
@@ -121,9 +123,9 @@ namespace MetaClothes.Controllers
                 await using var connection = new NpgsqlConnection(connectionString);
                 await connection.OpenAsync();
 
-                var sql = "DELETE FROM Clothes WHERE ID = @ID";
+                var sql = "DELETE FROM Clothes WHERE id = @id";
                 await using var cmd = new NpgsqlCommand(sql, connection);
-                cmd.Parameters.AddWithValue("@ID", id);
+                cmd.Parameters.AddWithValue("@id", id);
 
                 var rowsAffected = await cmd.ExecuteNonQueryAsync();
 
