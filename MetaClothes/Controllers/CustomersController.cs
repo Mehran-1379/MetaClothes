@@ -1,80 +1,209 @@
 ﻿using MetaClothes.Models;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
+//using System.Data;
 
 namespace MetaClothes.Controllers
 {
 
-    [Route("api/[controller]")]
+    [Route("api/customers")]
     [ApiController]
     public class CustomersController : ControllerBase
     {
+        private readonly string connectionString = "Port=1379;Host=localhost" +
+            ";Database=MetaClothes;Username=postgres;" +
+            "Persist Security Info=True;Password=13ColonelRhodes79";
 
-        private readonly ICustomerService _customerService;
-
-        public CustomersController(ICustomerService customerService)
-        {
-            _customerService = customerService;
-        }
-
-        // GET api/customers
+        //GET All Customers
         [HttpGet]
-        public ActionResult<IEnumerable<CustomerDTO>> GetCustomers()
+        public async Task<ActionResult<IEnumerable<string>>> GetCustomers()
         {
-            var customers = _customerService.GetAllCustomers();
-            return Ok(customers);
+            try
+            {
+                await using var connection = new NpgsqlConnection(connectionString);
+                await connection.OpenAsync();
+
+                var sql = "SELECT * FROM customers";
+                await using var cmd = new NpgsqlCommand(sql, connection);
+
+                await using var reader = await cmd.ExecuteReaderAsync();
+
+                var customers = new List<string>();
+
+                while (await reader.ReadAsync())
+                {
+                   
+                    var customerid = reader.GetInt32(0).ToString();
+                    var customername = reader.GetString(1);
+                    var customerlast = reader.GetString(2);
+                    var customeremail = reader.GetString(3);
+                    var customeraddress = reader.GetString(5);
+                    customers.Add(customerid);
+                    customers.Add(customername);
+                    customers.Add(customerlast);
+                    customers.Add(customeremail);
+                    customers.Add(customeraddress);
+
+                }
+
+                return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
+
         }
 
-        // GET api/customers/{id}
+        //Get Customer By Id
+
         [HttpGet("{id}")]
-        public ActionResult<CustomerDTO> GetCustomerById(int id)
+
+        public async Task<ActionResult<IEnumerable<string>>> GetCustomerbyid(int id)
         {
-            var customer = _customerService.GetCustomerById(id);
-            if (customer == null)
+
+            try
             {
-                return NotFound();
+                await using var connection = new NpgsqlConnection(connectionString);
+                await connection.OpenAsync();
+
+                var sql = "SELECT * FROM customers WHERE customer_id = @customer_id";
+                await using var cmd = new NpgsqlCommand(sql, connection);
+                cmd.Parameters.AddWithValue("@customer_Id", id);
+                await using var reader = await cmd.ExecuteReaderAsync();
+
+                var customers = new List<string>();
+
+                while (await reader.ReadAsync())
+                {
+                    var customerid = reader.GetInt32(0).ToString();
+                    var customername = reader.GetString(1);
+                    var customerlast = reader.GetString(2);
+                    var customeremail = reader.GetString(3);
+                    var customeraddress = reader.GetString(5);
+                    customers.Add(customerid);
+                    customers.Add(customername);
+                    customers.Add(customerlast);
+                    customers.Add(customeremail);
+                    customers.Add(customeraddress);
+
+                }
+
+                return Ok(customers);
             }
-            return Ok(customer);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
+
+
         }
 
-        // POST api/customers
-        [HttpPost]
-        public ActionResult<CustomerDTO> CreateCustomer([FromBody] CustomerDTO customerDTO)
-        {
-            var createdCustomer = _customerService.CreateCustomer(customerDTO);
-            return CreatedAtAction(nameof(GetCustomerById), new { id = createdCustomer.CustomerId }, createdCustomer);
-        }
 
-        // PUT api/customers/{id}
+
+        //Update Customer By Id
         [HttpPut("{id}")]
-        public IActionResult UpdateCustomer(int id, [FromBody] CustomerDTO customerDTO)
+        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerDTO customer)
         {
-            if (id != customerDTO.CustomerId)
+            try
             {
-                return BadRequest();
-            }
+                await using var connection = new NpgsqlConnection(connectionString);
+                await connection.OpenAsync();
 
-            if (!_customerService.CustomerExists(id))
+                var sql = "UPDATE customers SET first_name = @first_name, last_name = @last_name, email = @email, password = @password, address = @address WHERE customer_id = @customer_id";
+                await using var cmd = new NpgsqlCommand(sql, connection);
+                cmd.Parameters.AddWithValue("@first_name", customer.FirstName);
+                cmd.Parameters.AddWithValue("@last_name", customer.LastName);
+                cmd.Parameters.AddWithValue("@email", customer.Email);
+                cmd.Parameters.AddWithValue("@password", customer.Password);
+                cmd.Parameters.AddWithValue("@address", customer.Address);
+                cmd.Parameters.AddWithValue("@customer_id", id);
+
+                var rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                if (rowsAffected == 0)
+                {
+                    return NotFound();
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                return StatusCode(500, $"Error: {ex.Message}");
             }
-
-            _customerService.UpdateCustomer(customerDTO);
-            return NoContent();
         }
 
-        // DELETE api/customers/{id}
+
+        //Add Customer
+        [HttpPost]
+        public async Task<IActionResult> CreateCustomer([FromBody] CustomerDTO customer)
+        {
+            try
+            {
+                await using var connection = new NpgsqlConnection(connectionString);
+                await connection.OpenAsync();
+
+                var sql = "INSERT INTO customers (customer_id, first_name, last_name, email, password, address) VALUES (@customer_id, @first_name, @last_name, @email, @password, @address)";
+                await using var cmd = new NpgsqlCommand(sql, connection);
+                cmd.Parameters.AddWithValue("@customer_id", customer.CustomerId);
+                cmd.Parameters.AddWithValue("@first_name", customer.FirstName);
+                cmd.Parameters.AddWithValue("@last_name", customer.LastName);
+                cmd.Parameters.AddWithValue("@email", customer.Email);
+                cmd.Parameters.AddWithValue("@password", customer.Password);
+                cmd.Parameters.AddWithValue("@address", customer.Address);
+
+
+
+                var rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                if (rowsAffected == 0)
+                {
+                    return StatusCode(500, "Error: Customer creation failed.");
+                }
+
+                return StatusCode(201, "Customer created successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
+        }
+
+
+
+
+        //Delete Customer By id
         [HttpDelete("{id}")]
-        public IActionResult DeleteCustomer(int id)
+        public async Task<IActionResult> DeleteCustomer(int id)
         {
-            var customer = _customerService.GetCustomerById(id);
-            if (customer == null)
+            try
             {
-                return NotFound();
-            }
+                await using var connection = new NpgsqlConnection(connectionString);
+                await connection.OpenAsync();
 
-            _customerService.DeleteCustomer(id);
-            return NoContent();
+                var sql = "DELETE FROM customers WHERE customer_id = @customer_id";
+                await using var cmd = new NpgsqlCommand(sql, connection);
+                cmd.Parameters.AddWithValue("@customer_id", id);
+
+                var rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                if (rowsAffected == 0)
+                {
+                    return NotFound();
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error: {ex.Message}");
+            }
         }
+
+
+
+
     }
 
 }
