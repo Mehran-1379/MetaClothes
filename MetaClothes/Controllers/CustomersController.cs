@@ -1,7 +1,6 @@
 ﻿using MetaClothes.Models;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
-//using System.Data;
 
 namespace MetaClothes.Controllers
 {
